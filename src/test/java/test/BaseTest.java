@@ -1,22 +1,31 @@
 package test;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import pageobjects.BasePage;
+import pageobjects.TourSearchPage;
 
 public class BaseTest extends AbstractTest {
 
     @Test
     public void testOpenPage() throws InterruptedException {
-        new BasePage(driver).openPage()
+        String departureCity = "Минск";
+        String country = "Египет";
+        int numberOfAdults = 2;
+        int numberOfChildren = 2;
+        String resort = "Хургада";
+
+        TourSearchPage tourSearchPage = new BasePage(driver).openPage()
                 .clickButtonTourSearch()
-                .selectDepartureCity("Минск")
-                .selectCountry("Египет")
+                .selectDepartureCity(departureCity)
+                .selectCountry(country)
                 .selectDepartureDatePeriodOfTwoWeeksFromToday()
                 .selectCountOfNightsMoreThan10()
-                .selectTourists(2, 2)
-                .selectResort("Хургада")
+                .selectTourists(numberOfAdults, numberOfChildren)
+                .selectResort(resort)
                 .clickButtonSearchTour();
 
-        Thread.sleep(10000);
+        Assert.assertTrue(tourSearchPage.isAnyResultContainsResortName(resort));
+        Assert.assertTrue(tourSearchPage.isAllResultsContainResortName(resort));
     }
 }
