@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,9 @@ public class TourSearchPage extends BasePage {
     private final String TOUR_SEARCH_URL = BASE_URL + "poisk-turov-vo-vse-strany/";
 
     private WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS));
+
+    @FindBy(className = "se-pre-con")
+    private WebElement loadingSearchForm;
 
     @FindBy(xpath = "//div[contains(@class,'TVProgressBar')]")
     private WebElement progressBar;
@@ -66,14 +70,23 @@ public class TourSearchPage extends BasePage {
         PageFactory.initElements(driver, this);
     }
 
-    public TourSearchPage selectDepartureCity(String selectedCity) throws InterruptedException {
-        Thread.sleep(5000);
-        buttonDepartureCity.click();
+    private void clickButtonWithJSExecutor(WebElement button) {
+        try {
+            button.click();
+        } catch (Exception e) {
+            JavascriptExecutor executor = (JavascriptExecutor) driver;
+            executor.executeScript("arguments[0].click();", button);
+        }
+    }
+
+    public TourSearchPage selectDepartureCity(String selectedCity) {
+        wait.until(ExpectedConditions.invisibilityOf(loadingSearchForm));
+        clickButtonWithJSExecutor(buttonDepartureCity);
         String citiesLocator = "//div[contains(@class,'TVTableCitiesItem')]";
         List<WebElement> cities = driver.findElements(By.xpath(citiesLocator));
         for (WebElement city : cities) {
             if (selectedCity.equals(city.getText().trim())) {
-                logger.info(city.getText());
+                logger.info("Departure city: " + city.getText());
                 city.click();
                 break;
             }
@@ -82,12 +95,12 @@ public class TourSearchPage extends BasePage {
     }
 
     public TourSearchPage selectCountry(String selectedCountry) {
-        buttonCountry.click();
+        clickButtonWithJSExecutor(buttonCountry);
         String countriesLocator = "//div[contains(@class,'TVCountryCheckboxContent')]";
         List<WebElement> countries = driver.findElements(By.xpath(countriesLocator));
         for (WebElement country : countries) {
             if (selectedCountry.equals(country.getText().trim())) {
-                logger.info(country.getText());
+                logger.info("Country: " + country.getText());
                 country.click();
                 break;
             }
@@ -95,40 +108,46 @@ public class TourSearchPage extends BasePage {
         return this;
     }
 
-    public TourSearchPage selectDepartureDatePeriodOfTwoWeeksFromToday() {
-        buttonDepartureDate.click();
-        buttonTodayDate.click();
-        String availableDaysLocator = "//td[contains(@class,'TVAvailableDays')]";
-        List<WebElement> availableDays = driver.findElements(By.xpath(availableDaysLocator));
-        /*for (int i = 13; i < availableDays.size(); i++) {
-            String classText = availableDays.get(i).getDomProperty("className");
-            System.out.println(classText);
-        }*/
-        availableDays.get(13).click();
-        logger.info("Departure dates " + buttonDepartureDate.getText());
+    public TourSearchPage selectDepartureDatePeriod(LocalDate startDate, LocalDate endDate) {
+        clickButtonWithJSExecutor(buttonDepartureDate);
+        int numberOfDaysAfterTodayStart = (int) (startDate.toEpochDay() - LocalDate.now().toEpochDay()) - 1;
+        int numberOfDaysAfterTodayEnd = (int) (endDate.toEpochDay() - LocalDate.now().toEpochDay()) - 1;
+        selectDepartureDateDay(numberOfDaysAfterTodayStart);
+        selectDepartureDateDay(numberOfDaysAfterTodayEnd);
+        wait.until(ExpectedConditions.visibilityOf(buttonDepartureDate));
+        logger.info("Departure dates: " + buttonDepartureDate.getText());
         return this;
     }
 
-    public TourSearchPage selectCountOfNightsMoreThan10() {
-        buttonNights.click();
+    private void selectDepartureDateDay(int numberOfDaysAfterToday) {
+        for (int i = 0; i <= 2; i++) {
+            String availableDaysLocator = "//td[contains(@class,'TVAvailableDays')]";
+            try {
+                List<WebElement> availableDays = driver.findElements(By.xpath(availableDaysLocator));
+                availableDays.get(numberOfDaysAfterToday).click();
+                break;
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            }
+        }
+    }
+
+    public TourSearchPage selectCountOfNights(int numberOfNights) {
+        clickButtonWithJSExecutor(buttonNights);
         String availableNightsLocator = "//div[contains(@class,'TVAvailableNight')]";
         List<WebElement> availableNights = driver.findElements(By.xpath(availableNightsLocator));
-        int count = 0;
         for (WebElement night : availableNights) {
-            if (Integer.parseInt(night.getText()) >= 11) {
+            if (Integer.parseInt(night.getText()) == numberOfNights) {
                 logger.info("Number of nights: " + night.getText());
                 night.click();
-                count++;
-                if (count == 2) {
-                    break;
-                }
+                break;
             }
         }
         return this;
     }
 
     public TourSearchPage selectTourists(int numberOfAdults, int numberOfChildren) {
-        buttonTourists.click();
+        clickButtonWithJSExecutor(buttonTourists);
         selectNumberOfAdults(numberOfAdults);
         selectNumberOfChildren(numberOfChildren);
         buttonAccept.click();
@@ -179,7 +198,7 @@ public class TourSearchPage extends BasePage {
         return this;
     }
 
-    private List<String> getListOfResortNamesInSearchResult(){
+    private List<String> getListOfResortNamesInSearchResult() {
         wait.until(ExpectedConditions.attributeContains(progressBar, "class", "TVHide"));
         String toursRegionLocator = "//div[@class='TVTourBlock']//div[@class='TVRegion']";
         List<String> regionsInResult = driver.findElements(By.xpath(toursRegionLocator)).stream()
@@ -193,11 +212,11 @@ public class TourSearchPage extends BasePage {
         return regionsInResult.stream().anyMatch(region -> region.contains(resortName));
     }
 
-    public boolean isAllResultsContainResortName(String resortName){
+    public boolean isAllResultsContainResortName(String resortName) {
         List<String> regionsInResult = getListOfResortNamesInSearchResult();
         logger.info(regionsInResult.toString());
         for (String regionInOneTour : regionsInResult) {
-            if (!regionInOneTour.contains(resortName)){
+            if (!regionInOneTour.contains(resortName)) {
                 return false;
             }
         }

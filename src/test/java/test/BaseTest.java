@@ -5,12 +5,17 @@ import org.testng.annotations.Test;
 import pageobjects.BasePage;
 import pageobjects.TourSearchPage;
 
+import java.time.LocalDate;
+
 public class BaseTest extends AbstractTest {
 
     @Test
-    public void testOpenPage() throws InterruptedException {
+    public void testOpenPage(){
         String departureCity = "Минск";
         String country = "Египет";
+        LocalDate datePeriodStart = LocalDate.of(2022, 5, 31);
+        LocalDate datePeriodEnd = LocalDate.of(2022, 6, 15);
+        int numberOfNights = 12;
         int numberOfAdults = 2;
         int numberOfChildren = 2;
         String resort = "Хургада";
@@ -19,8 +24,8 @@ public class BaseTest extends AbstractTest {
                 .clickButtonTourSearch()
                 .selectDepartureCity(departureCity)
                 .selectCountry(country)
-                .selectDepartureDatePeriodOfTwoWeeksFromToday()
-                .selectCountOfNightsMoreThan10()
+                .selectDepartureDatePeriod(datePeriodStart, datePeriodEnd)
+                .selectCountOfNights(numberOfNights)
                 .selectTourists(numberOfAdults, numberOfChildren)
                 .selectResort(resort)
                 .clickButtonSearchTour();
