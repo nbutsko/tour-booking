@@ -3,6 +3,7 @@ package test;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pageobjects.BasePage;
+import pageobjects.SearchResultPage;
 import pageobjects.TourSearchPage;
 
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ public class BaseTest extends AbstractTest {
         int numberOfChildren = 2;
         String resort = "Хургада";
 
-        TourSearchPage tourSearchPage = new BasePage(driver).openPage()
+        SearchResultPage searchResultPage = new BasePage(driver).openPage()
                 .clickButtonTourSearch()
                 .selectDepartureCity(departureCity)
                 .selectCountry(country)
@@ -30,7 +31,7 @@ public class BaseTest extends AbstractTest {
                 .selectResort(resort)
                 .clickButtonSearchTour();
 
-        Assert.assertTrue(tourSearchPage.isAnyResultContainsResortName(resort));
-        Assert.assertTrue(tourSearchPage.isAllResultsContainResortName(resort));
+        Assert.assertTrue(searchResultPage.isAnyResultContainsResortName(resort));
+        Assert.assertTrue(searchResultPage.isAllResultsContainResortName(resort));
     }
 }

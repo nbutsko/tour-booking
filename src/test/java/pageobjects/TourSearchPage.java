@@ -4,24 +4,16 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TourSearchPage extends BasePage {
 
     private final String TOUR_SEARCH_URL = BASE_URL + "poisk-turov-vo-vse-strany/";
 
-    private WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS));
-
     @FindBy(className = "se-pre-con")
     private WebElement loadingSearchForm;
-
-    @FindBy(xpath = "//div[contains(@class,'TVProgressBar')]")
-    private WebElement progressBar;
 
     @FindBy(xpath = "//div[contains(@class,'TVLocationButton')]")
     private WebElement buttonDepartureCity;
@@ -193,33 +185,8 @@ public class TourSearchPage extends BasePage {
         return this;
     }
 
-    public TourSearchPage clickButtonSearchTour() {
+    public SearchResultPage clickButtonSearchTour() {
         buttonSearchTour.click();
-        return this;
-    }
-
-    private List<String> getListOfResortNamesInSearchResult() {
-        wait.until(ExpectedConditions.attributeContains(progressBar, "class", "TVHide"));
-        String toursRegionLocator = "//div[@class='TVTourBlock']//div[@class='TVRegion']";
-        List<String> regionsInResult = driver.findElements(By.xpath(toursRegionLocator)).stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
-        return regionsInResult;
-    }
-
-    public boolean isAnyResultContainsResortName(String resortName) {
-        List<String> regionsInResult = getListOfResortNamesInSearchResult();
-        return regionsInResult.stream().anyMatch(region -> region.contains(resortName));
-    }
-
-    public boolean isAllResultsContainResortName(String resortName) {
-        List<String> regionsInResult = getListOfResortNamesInSearchResult();
-        logger.info(regionsInResult.toString());
-        for (String regionInOneTour : regionsInResult) {
-            if (!regionInOneTour.contains(resortName)) {
-                return false;
-            }
-        }
-        return true;
+        return new SearchResultPage(driver);
     }
 }
