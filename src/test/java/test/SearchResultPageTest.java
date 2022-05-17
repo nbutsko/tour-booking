@@ -4,14 +4,13 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import pageobjects.BasePage;
 import pageobjects.SearchResultPage;
-import pageobjects.TourSearchPage;
 
 import java.time.LocalDate;
 
-public class BaseTest extends AbstractTest {
+public class SearchResultPageTest extends AbstractTest {
 
     @Test
-    public void testOpenPage(){
+    public void testSearchResultPageContainsResortName(){
         String departureCity = "Минск";
         String country = "Египет";
         LocalDate datePeriodStart = LocalDate.of(2022, 5, 31);

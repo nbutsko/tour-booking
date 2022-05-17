@@ -10,7 +10,8 @@ import java.time.Duration;
 
 public class BasePage extends AbstractPage {
 
-    protected WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS));
+    public final static int WAIT_TIMEOUT_SECONDS = 50;
+    public WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS));
 
     @FindBy(xpath = "//nav[@class='menu']//a[@href='/poisk-turov-vo-vse-strany/']")
     private WebElement buttonTourSearch;

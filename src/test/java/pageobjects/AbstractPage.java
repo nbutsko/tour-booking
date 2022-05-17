@@ -6,14 +6,13 @@ import org.openqa.selenium.WebDriver;
 
 public class AbstractPage {
 
-    protected WebDriver driver;
     public final static String BASE_URL = "https://alatantour.by/";
-    public final static int WAIT_TIMEOUT_SECONDS = 50;
 
-    protected static final Logger logger = LogManager.getLogger();
+    public static final Logger logger = LogManager.getLogger();
+
+    public WebDriver driver;
 
     public AbstractPage(WebDriver driver) {
         this.driver = driver;
     }
-
 }
