@@ -118,7 +118,7 @@ public class TourSearchPage extends BasePage {
                 List<WebElement> availableDays = driver.findElements(By.xpath(availableDaysLocator));
                 availableDays.get(numberOfDaysAfterToday).click();
                 break;
-            } catch (Exception e) {
+            } catch (StaleElementReferenceException e) {
                 logger.warn(e.getMessage());
             }
         }
@@ -171,7 +171,7 @@ public class TourSearchPage extends BasePage {
     }
 
     public TourSearchPage selectResort(String selectedResort) {
-        buttonResorts.click();
+        clickButtonWithJSExecutor(buttonResorts);
         String resortsLocator = "//div[contains(@class,'TreeListItem')]";
         List<WebElement> resorts = driver.findElements(By.xpath(resortsLocator));
         for (WebElement resort : resorts) {
@@ -186,7 +186,7 @@ public class TourSearchPage extends BasePage {
     }
 
     public SearchResultPage clickButtonSearchTour() {
-        buttonSearchTour.click();
+        clickButtonWithJSExecutor(buttonSearchTour);
         return new SearchResultPage(driver);
     }
 }
