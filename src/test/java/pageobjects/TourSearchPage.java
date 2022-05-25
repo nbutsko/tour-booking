@@ -181,7 +181,7 @@ public class TourSearchPage extends BasePage {
                 break;
             }
         }
-        buttonAccept.click();
+        clickButtonWithJSExecutor(buttonAccept);
         return this;
     }
 
