@@ -181,7 +181,7 @@ public class TourSearchPage extends BasePage {
                 break;
             }
         }
-        wait.until(ExpectedConditions.elementToBeClickable(buttonAccept));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.TVButtonActive")));
         clickButtonWithJSExecutor(buttonAccept);
         return this;
     }
