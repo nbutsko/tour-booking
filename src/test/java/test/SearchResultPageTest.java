@@ -13,8 +13,8 @@ public class SearchResultPageTest extends AbstractTest {
     public void testSearchResultPageContainsResortName(){
         String departureCity = "Минск";
         String country = "Египет";
-        LocalDate datePeriodStart = LocalDate.of(2022, 5, 31);
-        LocalDate datePeriodEnd = LocalDate.of(2022, 6, 15);
+        LocalDate datePeriodStart = LocalDate.now().plusWeeks(2);
+        LocalDate datePeriodEnd = LocalDate.now().plusWeeks(4);
         int numberOfNights = 12;
         int numberOfAdults = 2;
         int numberOfChildren = 2;
